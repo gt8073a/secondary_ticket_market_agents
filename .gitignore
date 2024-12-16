@@ -1,3 +1,5 @@
 *.bak
 data/*
+.venv/*
 !data/.gitkeep
+KEYS
