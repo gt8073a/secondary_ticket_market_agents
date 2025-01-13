@@ -1,0 +1,24 @@
+check task id for stopped reason: completed / cancelled / etc
+	put in log
+
+check for setting project ( and look on billing page )
+	https://platform.openai.com/settings/organization/usage
+	this is done with the AI key
+
+store extreme in fileo
+
+make extreme and batch objs
+make gemini and openai their own objects, but both callable in same script via params
+
+solve dates issue:
+	in gemini, the right tour is getting selected, but the tour dates are wrong for adele
+		the dates changed, and are not reflected in response
+	a bad date for aerosmith still came up with a tour, even though the dates did not match up
+
+get sports leagues role up to snuff
+
+get venues meta data role up to snuff
+
+get venues seating role up to snuff
+
+get upcoming onsale data role
