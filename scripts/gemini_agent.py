@@ -89,7 +89,9 @@ def fetch_extreme_response( argsparsed, server_role, user_query_list ):
    try:
 
       model = genai.GenerativeModel(
-          model_name         = 'gemini-1.5-flash'
+        # model_name         = 'gemini-1.5-flash'
+        # model_name         = 'gemini-2.0-flash-exp'
+          model_name         = 'gemini-1.5-pro'
         , system_instruction = server_role
       )
       response = model.generate_content( user_query_text )
