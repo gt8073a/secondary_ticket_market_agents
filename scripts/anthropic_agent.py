@@ -91,14 +91,16 @@ def fetch_extreme_response( argsparsed, server_role, user_query_list ):
       response = ai.messages.create(
          model           = 'claude-3-5-sonnet-latest',
          max_tokens      = 2000,
+         system          = server_role,
          messages = [
-             { 'role': 'system', 'content': server_role }
-           , { 'role': 'user',   'content': user_query_text }
+           { 'role': 'user',   'content': user_query_text }
          ]
       )
 
       logging.debug( response )
-      answer = response.choices[0].message.content.strip()
+      logging.info( response.usage )
+      logging.info( response.content )
+      answer = json.dumps( json.loads( str(response.content[0].text) ) )
 
    except anthropic.APIConnectionError as e:
       logging.error( 'The server could not be reached' )
