@@ -5,7 +5,7 @@ import os, sys
 import time, datetime
 import logging
 
-openai = OpenAI()
+ai = OpenAI()
 
 def parse_input():
   
@@ -87,7 +87,7 @@ def fetch_extreme_response( argsparsed, server_role, user_query_list ):
    user_query_text = "\n".join( user_query_list )
    try:
 
-      response = openai.chat.completions.create(
+      response = ai.chat.completions.create(
          model           = 'gpt-4o',
          max_tokens      = 2000,
          temperature     = argsparsed.temperature,
@@ -154,7 +154,7 @@ def _write_tasks_to_local_file( argsparsed, these_tasks ):
    return( this_batch_filename )
 
 def _get_batch_file( argsparsed, task_file_name ):
-   this_batch_file = openai.files.create(
+   this_batch_file = ai.files.create(
       file    = open( task_file_name, 'rb' ),
       purpose = 'batch'
    )
@@ -162,7 +162,7 @@ def _get_batch_file( argsparsed, task_file_name ):
    return( this_batch_file )
 
 def _upload_batch_file( argsparsed, this_batch_file ):
-   batch_job = openai.batches.create(
+   batch_job = ai.batches.create(
       input_file_id     = this_batch_file.id,
       endpoint          = '/v1/chat/completions',
       completion_window = argsparsed.completion_window
@@ -184,7 +184,7 @@ def _poll_until_batch_done( argsparsed, batch_job ):
          break
 
       time.sleep( argsparsed.poll_check )
-      retrieved_job = openai.batches.retrieve(batch_job.id)
+      retrieved_job = ai.batches.retrieve(batch_job.id)
       logging.info( retrieved_job )
 
       # https://help.openai.com/en/articles/9197833-batch-api-faq
@@ -200,7 +200,7 @@ def _write_results_to_local_file( argsparsed, completed_job ):
    result_file_name = argsparsed.identifier + '_results.jsonl'
    logging.info( f"results file name: {result_file_name}" )
 
-   result_content   = openai.files.content(result_file_id).content
+   result_content   = ai.files.content(result_file_id).content
    with open( result_file_name, 'wb') as file:
       file.write( result_content )
 

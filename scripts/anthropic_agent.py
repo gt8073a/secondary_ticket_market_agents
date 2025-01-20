@@ -1,12 +1,12 @@
-import google.generativeai as ai
-
+import anthropic
+from anthropic import Anthropic
 
 import json
 import os, sys
 import time, datetime
 import logging
 
-ai.configure( api_key=os.environ['GEMINI_API_KEY'] )
+ai = Anthropic()
 
 def parse_input():
   
@@ -88,18 +88,32 @@ def fetch_extreme_response( argsparsed, server_role, user_query_list ):
    user_query_text = "\n".join( user_query_list )
    try:
 
-      model = ai.GenerativeModel(
-        # model_name         = 'gemini-1.5-flash'
-        # model_name         = 'gemini-2.0-flash-exp'
-          model_name         = 'gemini-1.5-pro'
-        , system_instruction = server_role
+      response = ai.messages.create(
+         model           = 'claude-3-5-sonnet-latest',
+         max_tokens      = 2000,
+         messages = [
+             { 'role': 'system', 'content': server_role }
+           , { 'role': 'user',   'content': user_query_text }
+         ]
       )
-      response = model.generate_content( user_query_text )
 
       logging.debug( response )
-      answer = response.candidates[0].content.parts[0].text
+      answer = response.choices[0].message.content.strip()
 
-      logging.info( response.usage_metadata )
+   except anthropic.APIConnectionError as e:
+      logging.error( 'The server could not be reached' )
+      logging.error( e.__cause__ )
+      sys.exit(1)
+
+   except anthropic.RateLimitError as e:
+      logging.error( 'A 429 status code was received; we should back off a bit.' )
+      sys.exit(1)
+
+   except anthropic.APIStatusError as e:
+      logging.error( 'Another non-200-range status code was received' )
+      logging.error( e.status_code )
+      logging.error( e )
+      sys.exit(1)
 
    except Exception as e:
       logging.error( e )
@@ -109,6 +123,7 @@ def fetch_extreme_response( argsparsed, server_role, user_query_list ):
 
 def fetch_batch_response( argsparsed, server_role, user_query_list=[] ):
     raise Exception( 'fetch_batch_response() not defined' )
+
 
 def main():
 
